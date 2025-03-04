@@ -7,7 +7,7 @@ All credit goes to eShards and Forta for the implementation. I just updated 3 li
 https://github.com/eshard/obfuscator-llvm <br>
 https://github.com/Cobalt-Strike/obfuscator-llvm
 
-## Installation for Windows
+# Installation for Windows
 
 To build this plugin you need to build LLVM. Refer to the [documentation](https://llvm.org/docs/CMake.html) for more information. 
 
@@ -17,7 +17,6 @@ Navigate to [Winlibs](https://winlibs.com) and install the latest release of GCC
 ![winlibs](assets/winlibs-install.png)
 
 Once installed, unzip the archive and move the directory to your preferred location. I recommend installing it in C:\mingw, as that’s what I use, and it will be easier to follow along.
-
 ### Add install to PATH
 
 To quickly access the System Properties in Windows to add or edit PATH variables, you can follow these steps:
