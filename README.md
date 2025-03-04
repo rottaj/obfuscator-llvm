@@ -174,6 +174,9 @@ llc --relocation-model=pic -filetype=obj hello_world_obfuscated.bc -o hello_worl
 clang hello_world_obfuscated.o -o hello_world_obfuscated
 ```
 
+## Enjoy...
+![winlibs](assets/llvmhell.png)
+
 ## References
 https://github.com/eshard/obfuscator-llvm <br>
 https://github.com/Cobalt-Strike/obfuscator-llvm
