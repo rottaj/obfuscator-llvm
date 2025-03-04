@@ -95,8 +95,8 @@
 //===----------------------------------------------------------------------------------===//
 
 #include "BogusControlFlow.h"
-#include "utils/Utils.h"
 #include "utils/CryptoUtils.h"
+#include "utils/Utils.h"
 
 namespace llvm {
 
@@ -308,7 +308,8 @@ void BogusControlFlow::addBogusFlow(BasicBlock *basicBlock, Function &F) {
   // The always true condition. End of the first block
   Twine *var4 = new Twine("condition");
   FCmpInst *condition =
-      new FCmpInst(*basicBlock, FCmpInst::FCMP_TRUE, LHS, RHS, *var4);
+    new FCmpInst(basicBlock->end(), FCmpInst::FCMP_TRUE, LHS, RHS, *var4);
+
   DEBUG_WITH_TYPE("gen", errs() << "bcf: Always true condition created\n");
 
   // Jump to the original basic block if the condition is true or
@@ -344,7 +345,7 @@ void BogusControlFlow::addBogusFlow(BasicBlock *basicBlock, Function &F) {
   // We add at the end a new always true condition
   Twine *var6 = new Twine("condition2");
   FCmpInst *condition2 =
-      new FCmpInst(*originalBB, CmpInst::FCMP_TRUE, LHS, RHS, *var6);
+    new FCmpInst(originalBB->end(), CmpInst::FCMP_TRUE, LHS, RHS, *var6);
   BranchInst::Create(originalBBpart2, alteredBB, (Value *)condition2,
                      originalBB);
   DEBUG_WITH_TYPE("gen", errs()
@@ -563,6 +564,8 @@ BasicBlock *BogusControlFlow::createAlteredBasicBlock(BasicBlock *basicBlock,
   return alteredBB;
 } // end of createAlteredBasicBlock()
 
+bool BogusControlFlowPass::isRequired() { return true; }
+
 /* doFinalization
  *
  * Overwrite FunctionPass method to apply the transformations to the whole
@@ -587,10 +590,10 @@ bool BogusControlFlow::doF(Module &M) {
 
   GlobalVariable *x =
       new GlobalVariable(M, Type::getInt32Ty(M.getContext()), false,
-                         GlobalValue::CommonLinkage, (Constant *)x1, *varX);
+                         GlobalValue::InternalLinkage, (Constant *)x1, *varX);
   GlobalVariable *y =
       new GlobalVariable(M, Type::getInt32Ty(M.getContext()), false,
-                         GlobalValue::CommonLinkage, (Constant *)y1, *varY);
+                         GlobalValue::InternalLinkage, (Constant *)y1, *varY);
 
   std::vector<Instruction *> toEdit, toDelete;
   BinaryOperator *op, *op1 = NULL;
@@ -627,8 +630,10 @@ bool BogusControlFlow::doF(Module &M) {
   for (std::vector<Instruction *>::iterator i = toEdit.begin();
        i != toEdit.end(); ++i) {
     // if y < 10 || x*(x+1) % 2 == 0
-    opX = new LoadInst(x->getValueType(), (Value *)x, "", (*i));
-    opY = new LoadInst(y->getValueType(), (Value *)y, "", (*i));
+    opX = new LoadInst(x->getType()->getPointerElementType(), (Value *)x, "",
+                       (*i));
+    opY = new LoadInst(y->getType()->getPointerElementType(), (Value *)y, "",
+                       (*i));
 
     op = BinaryOperator::Create(
         Instruction::Sub, (Value *)opX,

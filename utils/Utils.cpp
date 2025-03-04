@@ -1,6 +1,6 @@
 #include "Utils.h"
-#include "llvm/IR/Constants.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Constants.h"
 #include "llvm/Support/raw_ostream.h"
 #include <sstream>
 
@@ -50,7 +50,7 @@ void fixStack(Function *f) {
     }
 
     for (unsigned int i = 0; i != tmpPhi.size(); ++i) {
-      DemotePHIToStack(tmpPhi.at(i), f->begin()->getTerminator());
+      DemotePHIToStack(tmpPhi.at(i), f->begin()->end());
     }
 
   } while (tmpReg.size() != 0 || tmpPhi.size() != 0);
